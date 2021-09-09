@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "GarProject1": {
+      "commandName": "Project",
+      "commandLineArgs": "\"C:\\Users\\vlape\\Downloads\\gar_xml\\75\" \"AS_ADDR_OBJ_20210830_3194700a-4672-4b62-89d5-10227f669789.XML\" \"AS_ADM_HIERARCHY_20210830_ff82be33-7380-44ae-8c40-5fd45cb544a3.XML\" \"AS_HOUSES_20210830_464f9312-a50e-4b58-8ffb-21f0055c8d51.XML\" \"AS_HOUSES_PARAMS_20210830_4ed0ef91-b177-40d4-afaf-09075a804e0e.XML\" \"result5.txt\""
+    }
+  }
+}
