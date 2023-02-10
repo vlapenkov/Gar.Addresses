@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31515.178
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GarProject1", "GarProject1\GarProject1.csproj", "{9AA46FF8-977A-41D6-BAE5-6BAFF97F63A6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gar.Addresses", "Gar.Addresses\Gar.Addresses.csproj", "{9AA46FF8-977A-41D6-BAE5-6BAFF97F63A6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

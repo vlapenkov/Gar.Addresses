@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "GarProject1": {
+      "commandName": "Project",
+      "commandLineArgs": "\"c:\\3_Source\\gar\\76\" \"AS_ADDR_OBJ_20210830_c7ef2261-0b6d-4c02-aa8a-7ebf01f7f5f3.XML\" \"AS_ADM_HIERARCHY_20210830_ad888668-bf12-41ec-8c4d-b55abce16262.XML\" \"AS_HOUSES_20210830_bdfc07e9-4802-49b0-84e3-50719e43c1e7.XML\" \"AS_HOUSES_PARAMS_20210830_d8c9e82e-2626-4057-a2d3-485e0034b6b2.XML\" \"result5.txt\""
+    }
+  }
+}

@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 
-namespace GarProject1
+namespace Gar.Addresses
 {
     /// <summary>
     /// Сперва заполняем dictionaries , затем поиск из них
@@ -22,12 +22,16 @@ namespace GarProject1
 
         IDictionary<int, Node> _nodesDict = new Dictionary<int, Node>();
 
-        public DictAddrParser(params string[] args) : this(args[0], args[1], args[2], args[3], args[4])
+
+        public DictAddrParser(Settings settings) : base(settings)
         {
 
         }
-        public DictAddrParser(string directory, string addrFile, string hierFile, string housesFile, string houseParams)
-            : base(directory, addrFile, hierFile, housesFile, houseParams)
+
+        /// <summary>
+        /// Заполнить словари
+        /// </summary>
+        public void FillDictionaries()
         {
 
             FillNodeLinks();
@@ -82,7 +86,7 @@ namespace GarProject1
                                 {
                                     var newNode = new House
                                     {
-                                        Id = Int32.Parse(reader.GetAttribute("OBJECTID")),
+                                        Id = int.Parse(reader.GetAttribute("OBJECTID")),
                                         Guid = Guid.Parse(reader.GetAttribute("OBJECTGUID")),
                                         Name = reader.GetAttribute("HOUSENUM"),
                                         TypeName = GetHouseType(reader.GetAttribute("HOUSETYPE")),
@@ -125,7 +129,7 @@ namespace GarProject1
                                 {
                                     var newNode = new Node
                                     {
-                                        Id = Int32.Parse(reader.GetAttribute("OBJECTID")),
+                                        Id = int.Parse(reader.GetAttribute("OBJECTID")),
                                         Guid = Guid.Parse(reader.GetAttribute("OBJECTGUID")),
                                         Name = reader.GetAttribute("NAME"),
                                         TypeName = reader.GetAttribute("TYPENAME")
@@ -164,8 +168,8 @@ namespace GarProject1
                                     && reader.GetAttribute("ISACTIVE") == "1"
                                     )
                                 {
-                                    int key = Int32.Parse(reader.GetAttribute("OBJECTID"));
-                                    int value = Int32.Parse(reader.GetAttribute("PARENTOBJID"));
+                                    int key = int.Parse(reader.GetAttribute("OBJECTID"));
+                                    int value = int.Parse(reader.GetAttribute("PARENTOBJID"));
 
                                     _childToParentDict.Add(key, value);
 
@@ -204,7 +208,7 @@ namespace GarProject1
 
                                     newNode = new Node
                                     {
-                                        Id = Int32.Parse(reader.GetAttribute("OBJECTID")),
+                                        Id = int.Parse(reader.GetAttribute("OBJECTID")),
                                         Guid = Guid.Parse(reader.GetAttribute("OBJECTGUID")),
                                         Name = reader.GetAttribute("NAME"),
                                         TypeName = reader.GetAttribute("TYPENAME")
@@ -223,13 +227,12 @@ namespace GarProject1
 
         public override async Task<IList<int>> GetNodeLinks(int nodeId)
         {
-            //  return _childToParentDict.Where(p => p.Value == nodeId).Select(p => p.Key).ToList();
             return _lookup[nodeId].ToList();
         }
 
         public override async Task<IList<Node>> GetNodes(IList<int> nodeIds)
         {
-            //  return _nodes.Where(node => nodeIds.Contains(node.Id)).ToList();
+
             return _nodesDict.Where(node => nodeIds.Contains(node.Key)).Select(p => p.Value).ToList();
         }
 
@@ -260,7 +263,7 @@ namespace GarProject1
 
                                 {
 
-                                    if (_dictHouses.TryGetValue(Int32.Parse(reader.GetAttribute("OBJECTID")), out House house))
+                                    if (_dictHouses.TryGetValue(int.Parse(reader.GetAttribute("OBJECTID")), out House house))
 
                                         house.Index = reader.GetAttribute("VALUE");
                                 }

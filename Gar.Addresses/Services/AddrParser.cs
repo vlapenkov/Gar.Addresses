@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 
-namespace GarProject1
+namespace Gar.Addresses
 {
     /// <summary>
     /// Поиск напрямую из xml файлов без мемоизации
@@ -19,23 +19,19 @@ namespace GarProject1
         protected string _housesFile;
         protected string _houseParams;
 
-        // public Node RootNode { get; set; }
 
-
-        public AddrParser(string directory, string addrFile, string hierFile, string housesFile, string houseParams)
+        public AddrParser(Settings settings)
         {
-            _addrFile = addrFile;
-            _hierFile = hierFile;
-            _directory = directory;
-            _housesFile = housesFile;
-            _houseParams = houseParams;
 
+            _addrFile = settings.AddressFilename;
+            _hierFile = settings.HierarchyFilename;
+            _directory = settings.Directory;
+            _housesFile = settings.HousesFilename;
+            _houseParams = settings.HousesParamsFilename;
         }
 
 
-
-
-        public virtual async Task<Node> GetNodeId(Guid fias)
+        public virtual async Task<Node> GetNodeByFias(Guid fias)
         {
             Node newNode = null;
             XmlReaderSettings settings = new XmlReaderSettings();
@@ -59,7 +55,7 @@ namespace GarProject1
 
                                     newNode = new Node
                                     {
-                                        Id = Int32.Parse(reader.GetAttribute("OBJECTID")),
+                                        Id = int.Parse(reader.GetAttribute("OBJECTID")),
                                         Guid = Guid.Parse(reader.GetAttribute("OBJECTGUID")),
                                         Name = reader.GetAttribute("NAME"),
                                         TypeName = reader.GetAttribute("TYPENAME")
@@ -74,13 +70,7 @@ namespace GarProject1
             }
         }
 
-        //public virtual async Task<IList<Node>> GetChildrenNodes(int nodeId)
-        //{
-        //    var elementIds = await GetNodeLinks(nodeId);
-        //    var nodes = await GetNodes(elementIds);
-        //    //if (nodes.Any()) nodes = await GetHouses(elementIds);
-        //    return nodes;
-        //}
+
 
         public virtual async Task<IList<int>> GetNodeLinks(int nodeId)
         {
@@ -101,7 +91,7 @@ namespace GarProject1
                                     reader.GetAttribute("PARENTOBJID") == nodeId.ToString()
                                     && reader.GetAttribute("ISACTIVE") == "1"
                                     )
-                                    result.Add(Int32.Parse(reader.GetAttribute("OBJECTID")));
+                                    result.Add(int.Parse(reader.GetAttribute("OBJECTID")));
 
                                 break;
                             }
@@ -134,7 +124,7 @@ namespace GarProject1
                                 {
                                     var newNode = new Node
                                     {
-                                        Id = Int32.Parse(reader.GetAttribute("OBJECTID")),
+                                        Id = int.Parse(reader.GetAttribute("OBJECTID")),
                                         Guid = Guid.Parse(reader.GetAttribute("OBJECTGUID")),
                                         Name = reader.GetAttribute("NAME"),
                                         TypeName = reader.GetAttribute("TYPENAME")
@@ -169,13 +159,13 @@ namespace GarProject1
                             {
                                 if (reader.Name == "HOUSE" &&
                                     reader.GetAttribute("OBJECTID") != null
-                                    && nodeIdsHashset.Contains(Int32.Parse(reader.GetAttribute("OBJECTID")))
+                                    && nodeIdsHashset.Contains(int.Parse(reader.GetAttribute("OBJECTID")))
                                      && reader.GetAttribute("ISACTIVE") == "1"
                                     )
                                 {
                                     var newNode = new House
                                     {
-                                        Id = Int32.Parse(reader.GetAttribute("OBJECTID")),
+                                        Id = int.Parse(reader.GetAttribute("OBJECTID")),
                                         Guid = Guid.Parse(reader.GetAttribute("OBJECTGUID")),
                                         Name = reader.GetAttribute("HOUSENUM"),
                                         TypeName = reader.GetAttribute("HOUSETYPE")
@@ -211,11 +201,11 @@ namespace GarProject1
                                 if (reader.Name == "PARAM" &&
                                     reader.GetAttribute("OBJECTID") != null
                                     && reader.GetAttribute("TYPEID") == "5"
-                                    && houseIds.Contains(Int32.Parse(reader.GetAttribute("OBJECTID")))
+                                    && houseIds.Contains(int.Parse(reader.GetAttribute("OBJECTID")))
 
                                     )
 
-                                    houses.First(x => x.Id == Int32.Parse(reader.GetAttribute("OBJECTID"))).Index = reader.GetAttribute("VALUE");
+                                    houses.First(x => x.Id == int.Parse(reader.GetAttribute("OBJECTID"))).Index = reader.GetAttribute("VALUE");
 
 
 
