@@ -7,46 +7,51 @@ using System.Threading.Tasks;
 
 namespace Gar.Addresses
 {
-    public class NodeTreeLogic
+    public class NodeTreeIterator
     {
         private AddrParser _parser;
-        //private Node _rootNode;
-        private IHousePrinter _printer;
+        private Node _rootNode;
 
-        public NodeTreeLogic(AddrParser parser, IHousePrinter printer)
+
+
+        public NodeTreeIterator(AddrParser parser, Node rootNode)
         {
             _parser = parser;
-            //_rootNode = rootNode;
-            _printer = printer;
+            _rootNode = rootNode;
+
         }
 
-
+        public async Task FillChildren() => await FillChildren(_rootNode);
 
 
         /// <summary>
-        /// Обойти дерево
+        /// Обойти дерево, получить дома
         /// </summary>
-
-        public void BypassTree(Node node)
+        public IEnumerable<House> GetHouses()
         {
-
-            if (node.Children.Any())
+            IEnumerable<House> GetHouses(Node node)
             {
-                foreach (var child in node.Children)
-                    BypassTree(child);
+
+                if (node.Children.Any())
+                {
+                    foreach (var child in node.Children)
+                        foreach (var house in GetHouses(child))
+                            yield return house;
+                }
+
+                if (node.Houses.Any())
+                    foreach (var house in node.Houses)
+                        yield return house;
+
             }
 
-            if (node.Houses.Any())
-                foreach (var house in node.Houses)
-                    _printer.Print(house);
-          
-
+            return GetHouses(_rootNode);
         }
 
         /// <summary>
-        /// Заполнить потомков при обходе дерева
+        /// Заполнить от рутового узла (области) до домов рекурсивно
         /// </summary>        
-        public async Task FillChildren(Node node)
+        private async Task FillChildren(Node node)
         {
             var elementIds = await _parser.GetNodeLinks(node.Id);
             var childNodes = await _parser.GetNodes(elementIds);

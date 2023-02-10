@@ -10,24 +10,28 @@ using System.Threading.Tasks;
 namespace Gar.Addresses
 {
     class Program
-    {       
+    {
 
         static async Task GenerateFileForBulkInsert(AddrParser parser, string outFile)
         {
             DateTime sdate = DateTime.Now;
             string guidstr = "a84b2ef4-db03-474b-b552-6229e801ae9b";// Яр.область
-           //  guidstr = "b6ba5716-eb48-401b-8443-b197c9578734";// Заб. край
+                                                                    //  guidstr = "b6ba5716-eb48-401b-8443-b197c9578734";// Заб. край
 
 
             var rootNode = await parser.GetNodeByFias(Guid.Parse(guidstr));
 
             using (var printer = new HouseToFilePrinter(outFile))
 
-            {    var logic = new NodeTreeLogic(parser, printer);
-            
-                await logic.FillChildren(rootNode);
+            {
+                var logic = new NodeTreeIterator(parser, rootNode);
 
-                logic.BypassTree(rootNode);
+                await logic.FillChildren();
+
+                var houses = logic.GetHouses();
+
+                foreach (var house in houses)
+                    printer.Print(house);
             }
 
             DateTime edate = DateTime.Now;
@@ -42,9 +46,9 @@ namespace Gar.Addresses
         {
 
             var builder = new ConfigurationBuilder()
-         .SetBasePath("C:\\3_Source\\Gar.Addresses\\Gar.Addresses")
+         .SetBasePath(@"C:\Users\vlape\source\repos\Gar.Addresses\Gar.Addresses")
          .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-         .AddEnvironmentVariables();            
+         .AddEnvironmentVariables();
 
             var config = builder.Build();
 

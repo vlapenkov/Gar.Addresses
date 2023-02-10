@@ -13,6 +13,7 @@ namespace Gar.Addresses
     /// </summary>
     public class DictAddrParser : AddrParser
     {
+        private static string[] houseType = { "", "влд.", "двлд.", "г-ж", "зд.", "шахта", "стр.", "соор.", "литера", "к.", "подв.", "кот.", "п-б" };
 
         Dictionary<int, int> _childToParentDict = new Dictionary<int, int>();
 
@@ -41,27 +42,29 @@ namespace Gar.Addresses
         }
 
 
-        public string GetHouseType(string type) =>
+        //private Dictionary<string,string> _houseType = new Dictionary<string, string>
+        //public string GetHouseType(string type) =>
 
-          type switch
-          {
-              "1" => "влд.",
-              "2" => "д.",
-              "3" => "двлд.",
-              "4" => "г-ж",
-              "5" => "зд.",
-              "6" => "шахта",
-              "7" => "стр.",
-              "8" => "соор.",
-              "9" => "литера",
-              "10" => "к.",
-              "11" => "подв.",
-              "12" => "кот.",
-              "13" => "п-б",
-              _ => "",
+        //  type switch
+        //{
+        //  { "1" , "влд." },
+        //  {  "2", "д." },
+        //  {  "3", "двлд." },
+        //  {  "4" , "г-ж" },
+        //  {  "5" , "зд." },
+        //  { "6" => "шахта",
+        //    "7" => "стр.",
+        //    "8" => "соор.",
+        //    "9" => "литера",
+        //    "10" => "к.",
+        //    "11" => "подв.",
+        //    "12" => "кот.",
+        //    "13" => "п-б",
+        //    _ => "",
 
-          };
+        //};
 
+        #region FillDictionaries
         private void FillHouses()
         {
 
@@ -89,7 +92,7 @@ namespace Gar.Addresses
                                         Id = int.Parse(reader.GetAttribute("OBJECTID")),
                                         Guid = Guid.Parse(reader.GetAttribute("OBJECTGUID")),
                                         Name = reader.GetAttribute("HOUSENUM"),
-                                        TypeName = GetHouseType(reader.GetAttribute("HOUSETYPE")),
+                                        TypeName = houseType[int.Parse(reader.GetAttribute("HOUSETYPE") ?? "0")],
                                         Addnum = reader.GetAttribute("ADDNUM1"),
 
                                     };
@@ -183,7 +186,44 @@ namespace Gar.Addresses
             _lookup = _childToParentDict.ToLookup(x => x.Value, x => x.Key);
         }
 
+        public void FillHouseIndexes()
+        {
 
+            XmlReaderSettings settings = new XmlReaderSettings();
+            settings.Async = true;
+
+            using (XmlReader reader = XmlReader.Create(Path.Combine(_directory, _houseParams), settings))
+            {
+                while (reader.Read())
+                {
+                    switch (reader.NodeType)
+                    {
+
+                        case XmlNodeType.Element:
+                            {
+                                if (reader.Name == "PARAM" &&
+                                    reader.GetAttribute("OBJECTID") != null
+                                    && reader.GetAttribute("TYPEID") == "5")
+
+                                {
+
+                                    if (_dictHouses.TryGetValue(int.Parse(reader.GetAttribute("OBJECTID")), out House house))
+
+                                        house.Index = reader.GetAttribute("VALUE");
+                                }
+                                // houses.First(x => x.Id == Int32.Parse(reader.GetAttribute("OBJECTID"))).Index = reader.GetAttribute("VALUE");
+
+
+
+                                break;
+                            }
+                    }
+                }
+
+            }
+
+        }
+        #endregion 
         public virtual async Task<Node> GetNodeId(Guid fias)
         {
             Node newNode = null;
@@ -242,42 +282,6 @@ namespace Gar.Addresses
 
         }
 
-        public void FillHouseIndexes()
-        {
 
-            XmlReaderSettings settings = new XmlReaderSettings();
-            settings.Async = true;
-
-            using (XmlReader reader = XmlReader.Create(Path.Combine(_directory, _houseParams), settings))
-            {
-                while (reader.Read())
-                {
-                    switch (reader.NodeType)
-                    {
-
-                        case XmlNodeType.Element:
-                            {
-                                if (reader.Name == "PARAM" &&
-                                    reader.GetAttribute("OBJECTID") != null
-                                    && reader.GetAttribute("TYPEID") == "5")
-
-                                {
-
-                                    if (_dictHouses.TryGetValue(int.Parse(reader.GetAttribute("OBJECTID")), out House house))
-
-                                        house.Index = reader.GetAttribute("VALUE");
-                                }
-                                // houses.First(x => x.Id == Int32.Parse(reader.GetAttribute("OBJECTID"))).Index = reader.GetAttribute("VALUE");
-
-
-
-                                break;
-                            }
-                    }
-                }
-
-            }
-
-        }
     }
 }
