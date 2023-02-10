@@ -12,11 +12,11 @@ namespace Gar.Addresses
     class Program
     {
 
-        static async Task GenerateFileForBulkInsert(AddrParser parser, string outFile)
+        static async Task GenerateFile(AddrParser parser, string outFile)
         {
             DateTime sdate = DateTime.Now;
             string guidstr = "a84b2ef4-db03-474b-b552-6229e801ae9b";// Яр.область
-                                                                    //  guidstr = "b6ba5716-eb48-401b-8443-b197c9578734";// Заб. край
+
 
 
             var rootNode = await parser.GetNodeByFias(Guid.Parse(guidstr));
@@ -58,7 +58,7 @@ namespace Gar.Addresses
 
             parser.FillDictionaries();
 
-            await GenerateFileForBulkInsert(parser, Path.Combine(settings.Directory, settings.OutputFilename));
+            await GenerateFile(parser, Path.Combine(settings.Directory, settings.OutputFilename));
 
         }
     }
